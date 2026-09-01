@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f4efe4"/>
+  <circle cx="970" cy="120" r="210" fill="#e6dcc4"/>
+  <circle cx="970" cy="120" r="145" fill="none" stroke="#28533d" stroke-opacity=".25" stroke-width="2"/>
+  <path d="M960 260V92M960 160c-70 0-110-36-116-98 70-7 110 29 116 98Zm0 54c70 0 110-36 116-98-70-7-110 29-116 98Z" stroke="#28533d" stroke-width="5" fill="none"/>
+  <circle cx="960" cy="65" r="20" fill="#a85f48"/>
+  <text x="100" y="250" fill="#20342a" font-family="Georgia,serif" font-size="108">Vườn Toán</text>
+  <text x="105" y="326" fill="#52645a" font-family="Arial,sans-serif" font-size="30">MATH NOTES · PROBLEMS · RESEARCH</text>
+  <path d="M105 380H650" stroke="#bd8f36" stroke-width="3"/>
+  <text x="105" y="448" fill="#52645a" font-family="Arial,sans-serif" font-size="28">Gieo bài toán. Nuôi dưỡng cách nghĩ.</text>
+</svg>

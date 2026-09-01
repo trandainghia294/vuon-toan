@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/site';
+---
+
+<BaseLayout title="Không tìm thấy trang" noindex={true}>
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">Lạc lối một chút</p>
+      <h1>Ở đây chưa mọc bài viết nào.</h1>
+      <p>Đường dẫn có thể đã thay đổi, hoặc chiếc lá này vẫn còn đang được gieo.</p>
+      <div class="button-row"><a class="button button-primary" href={withBase('')}>Trở về lối vào</a></div>
+    </div>
+  </section>
+</BaseLayout>

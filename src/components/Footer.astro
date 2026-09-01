@@ -1,0 +1,18 @@
+---
+import { withBase } from '../lib/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <p class="footer-brand">Vườn Toán</p>
+      <p class="footer-copy">Nơi gieo bài toán, nuôi dưỡng cách nghĩ và lưu lại những lời giải đẹp. Nội dung được viết bằng sự cẩn trọng trước khi được tưới bằng cà phê.</p>
+    </div>
+    <div class="footer-links">
+      <a href={withBase('bai-viet/')}>Bài viết</a>
+      <a href={withBase('gioi-thieu/')}>Giới thiệu</a>
+      <span>© {year}</span>
+    </div>
+  </div>
+</footer>

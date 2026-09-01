@@ -1,0 +1,90 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+---
+
+<BaseLayout title="Bài viết" description="Tìm bài toán, chuyên đề, ghi chép sư phạm và ghi chú nghiên cứu trong Vườn Toán.">
+  <header class="page-hero">
+    <div class="container">
+      <p class="eyebrow">Kho bài viết</p>
+      <h1>Mỗi bài là một nhánh đang lớn.</h1>
+      <p>Tìm theo từ khóa hoặc chọn lối đi phù hợp. Các bài tập được trình bày để người học có thời gian suy nghĩ trước khi mở gợi ý và lời giải.</p>
+    </div>
+  </header>
+
+  <section class="section-compact container" data-post-browser>
+    <div class="filter-bar">
+      <div class="search-field">
+        <label for="post-search">Tìm trong vườn</label>
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <input class="search-input" id="post-search" type="search" placeholder="Ví dụ: số học, đường tròn, khả nghịch…" autocomplete="off" data-search-input />
+        </div>
+      </div>
+      <div class="filter-buttons" aria-label="Lọc theo người đọc">
+        <button class="filter-button" type="button" data-audience="all" aria-pressed="true">Tất cả</button>
+        <button class="filter-button" type="button" data-audience="hoc-sinh" aria-pressed="false">Học sinh</button>
+        <button class="filter-button" type="button" data-audience="giao-vien" aria-pressed="false">Giáo viên</button>
+        <button class="filter-button" type="button" data-audience="nghien-cuu" aria-pressed="false">Nghiên cứu</button>
+      </div>
+    </div>
+
+    <p class="results-status" aria-live="polite" data-results-status></p>
+    <div class="post-grid" data-results-grid>
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+    <div class="empty-state" data-empty-state hidden>Chưa tìm thấy bài phù hợp. Thử một từ khóa rộng hơn nhé.</div>
+  </section>
+</BaseLayout>
+
+<script>
+  const browser = document.querySelector('[data-post-browser]');
+  if (browser) {
+    const cards = [...browser.querySelectorAll<HTMLElement>('[data-post-card]')];
+    const input = browser.querySelector<HTMLInputElement>('[data-search-input]');
+    const buttons = [...browser.querySelectorAll<HTMLButtonElement>('[data-audience]')];
+    const status = browser.querySelector<HTMLElement>('[data-results-status]');
+    const empty = browser.querySelector<HTMLElement>('[data-empty-state]');
+    let audience = 'all';
+
+    const normalize = (value: string) => value
+      .toLocaleLowerCase('vi')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd');
+
+    const apply = () => {
+      const query = normalize(input?.value || '').trim();
+      let visible = 0;
+      cards.forEach((card) => {
+        const matchesAudience = audience === 'all' || card.dataset.audience === audience;
+        const matchesSearch = !query || normalize(card.dataset.search || '').includes(query);
+        const show = matchesAudience && matchesSearch;
+        card.hidden = !show;
+        if (show) visible += 1;
+      });
+      if (status) status.textContent = `${visible} bài viết`;
+      if (empty) empty.hidden = visible !== 0;
+    };
+
+    const setAudience = (value: string) => {
+      audience = value;
+      buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.audience === value)));
+      const url = new URL(window.location.href);
+      if (value === 'all') url.searchParams.delete('audience');
+      else url.searchParams.set('audience', value);
+      history.replaceState({}, '', url);
+      apply();
+    };
+
+    buttons.forEach((button) => button.addEventListener('click', () => setAudience(button.dataset.audience || 'all')));
+    input?.addEventListener('input', apply);
+
+    const initial = new URLSearchParams(window.location.search).get('audience');
+    setAudience(initial && buttons.some((button) => button.dataset.audience === initial) ? initial : 'all');
+  }
+</script>

@@ -1,0 +1,57 @@
+---
+import BrandMark from './BrandMark.astro';
+import { withBase } from '../lib/site';
+
+const path = Astro.url.pathname;
+const homePath = withBase('');
+const postsPath = withBase('bai-viet/');
+const aboutPath = withBase('gioi-thieu/');
+const isCurrent = (target: string) => target === homePath ? path === homePath : path.startsWith(target);
+---
+
+<header class="site-header" data-site-header>
+  <div class="container header-inner">
+    <a class="site-brand" href={homePath} aria-label="Vườn Toán — trang chủ">
+      <BrandMark />
+      <span>VƯỜN TOÁN</span>
+    </a>
+
+    <nav class="site-nav" id="site-navigation" aria-label="Điều hướng chính" data-site-nav>
+      <a href={homePath} aria-current={isCurrent(homePath) ? 'page' : undefined}>Lối vào</a>
+      <a href={postsPath} aria-current={isCurrent(postsPath) ? 'page' : undefined}>Bài viết</a>
+      <a href={`${postsPath}?audience=hoc-sinh`}>Kho bài tập</a>
+      <a href={`${postsPath}?audience=nghien-cuu`}>Nghiên cứu</a>
+      <a href={aboutPath} aria-current={isCurrent(aboutPath) ? 'page' : undefined}>Giới thiệu</a>
+    </nav>
+
+    <button class="icon-button" type="button" aria-label="Đổi giao diện sáng hoặc tối" data-theme-toggle>
+      <svg data-icon-light viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <svg data-icon-dark viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.4 15.2A8.5 8.5 0 0 1 8.8 3.6 8.5 8.5 0 1 0 20.4 15.2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+    </button>
+
+    <button class="menu-button" type="button" aria-label="Mở trình đơn" aria-expanded="false" aria-controls="site-navigation" data-menu-toggle>
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector('[data-site-header]');
+  if (header) {
+    const menuButton = header.querySelector('[data-menu-toggle]');
+    const nav = header.querySelector('[data-site-nav]');
+    menuButton?.addEventListener('click', () => {
+      const open = menuButton.getAttribute('aria-expanded') !== 'true';
+      menuButton.setAttribute('aria-expanded', String(open));
+      menuButton.setAttribute('aria-label', open ? 'Đóng trình đơn' : 'Mở trình đơn');
+      nav?.setAttribute('data-open', String(open));
+    });
+
+    const themeButton = header.querySelector('[data-theme-toggle]');
+    themeButton?.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem('vuon-toan-theme', next);
+    });
+  }
+</script>

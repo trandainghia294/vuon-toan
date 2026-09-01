@@ -1,0 +1,98 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GardenMap from '../components/GardenMap.astro';
+import PostCard from '../components/PostCard.astro';
+import { withBase } from '../lib/site';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+const featured = posts.filter((post) => post.data.featured).slice(0, 3);
+---
+
+<BaseLayout>
+  <section class="container hero">
+    <div>
+      <p class="eyebrow">Math notes · Problems · Research</p>
+      <h1>Mỗi ý tưởng toán học bắt đầu như một <em>hạt giống.</em></h1>
+      <p class="hero-copy">Một khu vườn để gieo bài toán, nuôi dưỡng cách nghĩ và lưu lại những lời giải đẹp — từ lớp học đến nghiên cứu.</p>
+      <div class="button-row">
+        <a class="button button-primary" href={withBase('bai-viet/')}>Dạo một vòng <span aria-hidden="true">→</span></a>
+        <a class="button" href={`${withBase('bai-viet/')}?audience=hoc-sinh`}>Tìm một bài toán</a>
+      </div>
+    </div>
+    <GardenMap />
+  </section>
+
+  <section class="section section-rule">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Đang nở trong vườn</p>
+          <h2>Những bài viết mới được vun trồng</h2>
+        </div>
+        <a class="text-link" href={withBase('bai-viet/')}>Xem tất cả →</a>
+      </div>
+      <div class="post-grid">
+        {featured.map((post) => <PostCard post={post} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Ba lối đi</p>
+          <h2>Vào vườn theo điều bạn đang cần</h2>
+        </div>
+      </div>
+      <div class="path-grid">
+        <a class="path-card" href={`${withBase('bai-viet/')}?audience=hoc-sinh`}>
+          <span class="path-number">01</span>
+          <h3>Dành cho học sinh</h3>
+          <p>Bài toán, gợi ý theo tầng và lời giải đủ rõ để tự học mà không bị làm hộ.</p>
+          <span class="path-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="path-card" href={`${withBase('bai-viet/')}?audience=giao-vien`}>
+          <span class="path-number">02</span>
+          <h3>Dành cho giáo viên</h3>
+          <p>Phiếu học tập, chuyên đề và những ghi chép thực tế từ lớp học.</p>
+          <span class="path-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="path-card" href={`${withBase('bai-viet/')}?audience=nghien-cuu`}>
+          <span class="path-number">03</span>
+          <h3>Dành cho nghiên cứu</h3>
+          <p>Ghi chú đại số, định nghĩa, ví dụ và những câu hỏi đáng tiếp tục theo đuổi.</p>
+          <span class="path-arrow" aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-rule">
+    <div class="container mode-panel">
+      <div>
+        <p class="eyebrow">Một bài · nhiều cách đọc</p>
+        <h2>Đừng đưa lời giải trước khi người học kịp nghĩ.</h2>
+        <p class="mode-panel-copy">Mỗi bài có thể chỉ hiện đề, mở từng gợi ý hoặc xem lời giải đầy đủ. Khi cần, bản in sẽ tự bỏ trình đơn và các chi tiết thừa.</p>
+      </div>
+      <div class="mode-example">
+        <span class="mode-example-label">Bài toán nhỏ</span>
+        <h3>Tính nhanh: 33 333 333 × 33 333 334</h3>
+        <details>
+          <summary>Gợi ý thứ nhất</summary>
+          <p>Hai thừa số là hai số tự nhiên liên tiếp.</p>
+        </details>
+        <details>
+          <summary>Gợi ý thứ hai</summary>
+          <p>Đặt <em>n</em> = 33 333 333, khi đó tích có dạng <em>n</em>(<em>n</em> + 1).</p>
+        </details>
+        <details>
+          <summary>Xem kết quả</summary>
+          <p>1 111 111 122 222 222.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

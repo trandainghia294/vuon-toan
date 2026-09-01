@@ -1,0 +1,21 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { audienceLabels, formatDate, sectionLabels, withBase } from '../lib/site';
+
+interface Props { post: CollectionEntry<'posts'>; }
+const { post } = Astro.props;
+const href = withBase(`bai-viet/${post.id}/`);
+---
+
+<article class="post-card" data-post-card data-audience={post.data.audience} data-search={`${post.data.title} ${post.data.description} ${post.data.topics.join(' ')}`}>
+  <div class="post-card-meta">
+    <span>{sectionLabels[post.data.section]}</span>
+    <span>{audienceLabels[post.data.audience]}</span>
+  </div>
+  <h3><a href={href}>{post.data.title}</a></h3>
+  <p>{post.data.description}</p>
+  <div class="post-card-footer">
+    <span>{formatDate(post.data.publishedAt)}</span>
+    <span>{post.data.readingTime} phút đọc</span>
+  </div>
+</article>

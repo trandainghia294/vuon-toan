@@ -1,0 +1,128 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hint from '../../components/content/Hint.astro';
+import Solution from '../../components/content/Solution.astro';
+import Note from '../../components/content/Note.astro';
+import PostCard from '../../components/PostCard.astro';
+import { audienceLabels, difficultyLabels, formatDate, sectionLabels } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post, allPosts: posts } }));
+}
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+  allPosts: CollectionEntry<'posts'>[];
+}
+
+const { post, allPosts } = Astro.props;
+const { Content, headings } = await render(post);
+const related = allPosts
+  .filter((candidate) => candidate.id !== post.id && candidate.data.topics.some((topic) => post.data.topics.includes(topic)))
+  .slice(0, 2);
+
+const articleUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : Astro.url.toString();
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.publishedAt.toISOString(),
+  dateModified: (post.data.updatedAt || post.data.publishedAt).toISOString(),
+  mainEntityOfPage: articleUrl,
+  publisher: { '@type': 'Organization', name: 'Vườn Toán' }
+};
+---
+
+<BaseLayout title={post.data.title} description={post.data.description} type="article" structuredData={structuredData}>
+  <article>
+    <header class="article-header">
+      <div class="article-header-inner">
+        <div class="post-card-meta">
+          <span>{sectionLabels[post.data.section]}</span>
+          <span>{audienceLabels[post.data.audience]}</span>
+        </div>
+        <h1>{post.data.title}</h1>
+        <p class="article-deck">{post.data.description}</p>
+        <div class="article-meta">
+          <span>Ngày {formatDate(post.data.publishedAt)}</span>
+          <span>{post.data.readingTime} phút đọc</span>
+          {post.data.grade && <span>{post.data.grade}</span>}
+          {post.data.difficulty && <span>{difficultyLabels[post.data.difficulty]}</span>}
+        </div>
+      </div>
+    </header>
+
+    <div class="container article-shell">
+      <div>
+        <div class="article-tools" aria-label="Công cụ bài viết">
+          <button class="button button-small" type="button" data-expand-all>Mở mọi gợi ý</button>
+          <button class="button button-small" type="button" data-print>In / lưu PDF</button>
+          <button class="button button-small" type="button" data-copy-link>Sao chép liên kết</button>
+          <span class="sr-only" aria-live="polite" data-copy-status></span>
+        </div>
+        <div class="prose">
+          <Content components={{ Hint, Solution, Note }} />
+        </div>
+      </div>
+
+      {headings.length > 0 && (
+        <aside class="toc" aria-label="Mục lục bài viết">
+          <p class="toc-title">Trong bài này</p>
+          <ol>
+            {headings.filter((heading) => heading.depth <= 3).map((heading) => (
+              <li class={`depth-${heading.depth}`}><a href={`#${heading.slug}`}>{heading.text}</a></li>
+            ))}
+          </ol>
+        </aside>
+      )}
+    </div>
+  </article>
+
+  {related.length > 0 && (
+    <section class="section section-rule">
+      <div class="container">
+        <div class="section-heading"><div><p class="eyebrow">Cùng một nhánh</p><h2>Có thể đọc tiếp</h2></div></div>
+        <div class="post-grid">{related.map((item) => <PostCard post={item} />)}</div>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<script>
+  const disclosures = [...document.querySelectorAll<HTMLDetailsElement>('.math-disclosure')];
+  const expandButton = document.querySelector<HTMLButtonElement>('[data-expand-all]');
+  const setExpandLabel = () => {
+    const allOpen = disclosures.length > 0 && disclosures.every((item) => item.open);
+    if (expandButton) expandButton.textContent = allOpen ? 'Đóng mọi gợi ý' : 'Mở mọi gợi ý';
+  };
+  expandButton?.addEventListener('click', () => {
+    const shouldOpen = !disclosures.every((item) => item.open);
+    disclosures.forEach((item) => { item.open = shouldOpen; });
+    setExpandLabel();
+  });
+  disclosures.forEach((item) => item.addEventListener('toggle', setExpandLabel));
+
+  document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+  document.querySelector('[data-copy-link]')?.addEventListener('click', async () => {
+    const status = document.querySelector('[data-copy-status]');
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      if (status) status.textContent = 'Đã sao chép liên kết.';
+    } catch {
+      if (status) status.textContent = 'Không thể sao chép tự động.';
+    }
+  });
+
+  let printState: boolean[] = [];
+  window.addEventListener('beforeprint', () => {
+    printState = disclosures.map((item) => item.open);
+    disclosures.forEach((item) => { item.open = true; });
+  });
+  window.addEventListener('afterprint', () => {
+    disclosures.forEach((item, index) => { item.open = printState[index]; });
+    setExpandLabel();
+  });
+</script>

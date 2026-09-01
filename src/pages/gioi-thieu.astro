@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/site';
+---
+
+<BaseLayout title="Giới thiệu" description="Vườn Toán là một không gian mở để lưu giữ bài toán, cách nghĩ, tài liệu dạy học và ghi chú nghiên cứu.">
+  <header class="page-hero">
+    <div class="container">
+      <p class="eyebrow">Về khu vườn</p>
+      <h1>Toán học cần cả sự chính xác lẫn thời gian để lớn.</h1>
+    </div>
+  </header>
+
+  <section class="section container about-grid">
+    <div class="about-statement">Vườn Toán không cố biến mọi bài toán thành trò vui. Nơi đây chỉ cố làm một việc khó hơn: giúp người đọc thấy việc suy nghĩ là đáng công.</div>
+    <div class="about-copy">
+      <h2>Vườn này có gì?</h2>
+      <p>Những bài viết ở đây trải từ Toán phổ thông đến ghi chú nghiên cứu. Có bài chỉ là một quan sát ngắn; có bài phát triển thành cả chuyên đề. Mỗi nội dung đều được gắn nhãn rõ để học sinh, giáo viên và người làm nghiên cứu tìm đúng lối đi của mình.</p>
+
+      <h2>Cách một bài viết được trình bày</h2>
+      <ul>
+        <li>Phát biểu bài toán hoặc câu hỏi trước, không vội đưa lời giải.</li>
+        <li>Gợi ý được chia thành từng tầng để người học còn cơ hội tự tìm đường.</li>
+        <li>Lập luận được viết đủ chặt chẽ, nhưng tránh làm khó người đọc bằng thuật ngữ không cần thiết.</li>
+        <li>Bản in tập trung vào nội dung, bỏ các thành phần trang trí và điều hướng.</li>
+      </ul>
+
+      <h2>Một khu vườn đang hình thành</h2>
+      <p>Đây là phiên bản đầu tiên. Các luống bài tập, cây chuyên đề và nhà kính nghiên cứu sẽ dần được bổ sung. Website không cần đầy ngay ngày đầu; điều quan trọng là mỗi bài mới đều có một chỗ đứng rõ ràng và có thể tìm lại nhiều năm sau.</p>
+
+      <div class="button-row"><a class="button button-primary" href={withBase('bai-viet/')}>Xem các bài đầu tiên →</a></div>
+    </div>
+  </section>
+</BaseLayout>
