@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://trandainghia294.github.io/vuon-toan/sitemap-index.xml
