@@ -418,6 +418,8 @@ a { -webkit-tap-highlight-color: transparent; }
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
+.post-card[hidden] { display: none; }
+
 .post-card::after {
   position: absolute;
   right: -28px;
